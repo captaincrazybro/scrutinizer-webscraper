@@ -1,21 +1,26 @@
 package sw
 
 import (
-	"net/http"
-	"encoding/json"
+	"fmt"
 	"log"
-	"io/ioutils"
+	"net/http"
+	"os"
 	"strings"
+	"time"
 
 	lu "github.com/captaincrazybro/literalutil"
 	"github.com/gocolly/colly"
 )
 
-var email, password, token, remember_me string
+var _token lu.String = "none"
 
 // Login logs into scrutinizer, retrieves the session cookies and returns them
 func Login() lu.String {
-	return ""
+	token := getCSRPToken()
+	_token = "none"
+	sessionId := loginCheck(token)
+
+	return sessionId
 }
 
 // getCSRPToken retrieves the CSRP token from the login page button
@@ -24,32 +29,40 @@ func getCSRPToken() lu.String {
 	c := colly.NewCollector()
 
 	// handle html
-
 	c.OnHTML("input[name]", func(e *colly.HTMLElement) {
 		if e.Attr("name") == "_token" {
-
+			_token = lu.String(e.Attr("value"))
 		}
 	})
-	return ""
+
+	// visits the site
+	err := c.Visit(LoginPageURL)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	return waitUntilTokenIsSet()
 }
 
 // loginCheck POSTs to the /login_check URL and retrieves the cookies, returning them
 func loginCheck(S lu.String) lu.String {
-	if email == "" {
-		log.Fatalln("We forgot to initialize the email!")
+	email := os.Getenv("SCRUTINIZER_USRNM")
+	password := os.Getenv("SCRUTINIZER_PSSWD")
+
+	if email == "" || password == "" {
+		log.Fatalln("We forgot to initialize the email and/or password!")
 	}
 
 	client := &http.Client{
 		Timeout: time.Second * 10,
 	}
 
-	bts, err := json.Marshall(body{email, password, token, remember_me})
-	if err != nil {
-		log.Fatalln(err)
-	}
+	bodyString := fmt.Sprintf("email=%s&password=%s&remember_me=1&_token=%s", strings.Replace(email, "@", "%40", 1), password, S)
+	fmt.Println(bodyString)
 
-	URL := Endpoint + "/login_check"
-	req, err := http.NewRequest("POST", URL, bts)
+	URL := Endpoint + "login_check"
+	req, err := http.NewRequest("POST", URL, strings.NewReader(bodyString))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -59,20 +72,32 @@ func loginCheck(S lu.String) lu.String {
 		log.Fatalln(err)
 	}
 
+	fmt.Println(res.Status)
+
 	defer res.Body.Close()
-	body, err := ioutil.ReadAll(req.Body)) 
+	//bts, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		log.Fatalln(err)
+		return ""
 	}
 
 	cookies := res.Header.Get("Cookies")
 
+	fmt.Printf("Cookies: %s\n", cookies)
+
 	token := strings.Split(cookies, "SESS=")[1]
 	token = strings.Split(token, ";")[0]
 
-	return token
+	return lu.String(token)
 }
 
-type body struct {
-	email, password, token, remember_me string
+// waitUntilTokenIsSet waits until the token is set and then returns it
+func waitUntilTokenIsSet() lu.String {
+	for i := 0; _token == "none"; i++ {
+		if i > 10 {
+			return _token
+		}
+		time.Sleep(time.Second)
+	}
+	return _token
 }
