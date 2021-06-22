@@ -2,10 +2,16 @@ package sw
 
 import (
 	"net/http"
+	"encoding/json"
+	"log"
+	"io/ioutils"
+	"strings"
 
 	lu "github.com/captaincrazybro/literalutil"
 	"github.com/gocolly/colly"
 )
+
+var email, password, token, remember_me string
 
 // Login logs into scrutinizer, retrieves the session cookies and returns them
 func Login() lu.String {
@@ -29,17 +35,44 @@ func getCSRPToken() lu.String {
 
 // loginCheck POSTs to the /login_check URL and retrieves the cookies, returning them
 func loginCheck(S lu.String) lu.String {
-	URL := Endpoint + "/login_check"
-	http.NewRequest("POST", URL, nil)
-
-	/**
-	Body: {
-		"email": "the@email.tld",
-		"password": "asdf123",
-		"_token": "the token S",
-		"remember_me": 1
+	if email == "" {
+		log.Fatalln("We forgot to initialize the email!")
 	}
-	*/
 
-	return ""
+	client := &http.Client{
+		Timeout: time.Second * 10,
+	}
+
+	bts, err := json.Marshall(body{email, password, token, remember_me})
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	URL := Endpoint + "/login_check"
+	req, err := http.NewRequest("POST", URL, bts)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	defer res.Body.Close()
+	body, err := ioutil.ReadAll(req.Body)) 
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	cookies := res.Header.Get("Cookies")
+
+	token := strings.Split(cookies, "SESS=")[1]
+	token = strings.Split(token, ";")[0]
+
+	return token
+}
+
+type body struct {
+	email, password, token, remember_me string
 }
