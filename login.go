@@ -28,9 +28,18 @@ func getCSRPToken() lu.String {
 }
 
 // loginCheck POSTs to the /login_check URL and retrieves the cookies, returning them
-func loginCheck(c colly.Collector) []*http.Cookie {
+func loginCheck(S lu.String) lu.String {
 	URL := Endpoint + "/login_check"
-	siteCookies := c.Cookies(URL)
+	http.NewRequest("POST", URL, nil)
 
-	return siteCookies
+	/**
+	Body: {
+		"email": "the@email.tld",
+		"password": "asdf123",
+		"_token": "the token S",
+		"remember_me": 1
+	}
+	*/
+
+	return ""
 }
