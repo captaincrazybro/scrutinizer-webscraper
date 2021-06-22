@@ -2,7 +2,7 @@ package sw
 
 import (
 	lu 	"github.com/captaincrazybro/literalutil"
-	c 	"github.com/gocolly/colly"
+	"github.com/gocolly/colly"
 )
 
 // Login logs into scrutinizer, retrieves the session cookies and returns them
@@ -18,7 +18,9 @@ func getCSRPToken() lu.String {
 }
 
 // loginCheck POSTs to the /login_check URL and retrieves the cookies, returning them
-func loginCheck() lu.String {
+func loginCheck(c Collector) string {
+	URL := Endpoint + "/login_check"
+	siteCookies := c.Cookies(r.Request.URL.String())
 
-	return ""
+	return siteCookies
 }
