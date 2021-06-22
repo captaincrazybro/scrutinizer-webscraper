@@ -1,7 +1,8 @@
 package sw
 
 import (
-	lu "github.com/captaincrazybro/literalutil"
+	lu 	"github.com/captaincrazybro/literalutil"
+	c 	"github.com/gocolly/colly"
 )
 
 // Login logs into scrutinizer, retrieves the session cookies and returns them
