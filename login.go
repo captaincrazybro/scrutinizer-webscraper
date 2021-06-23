@@ -16,15 +16,16 @@ var _token lu.String = "none"
 
 // Login logs into scrutinizer, retrieves the session cookies and returns them
 func Login() lu.String {
-	token := getCSRPToken()
+	token, sessionId := getCSRPToken()
 	_token = "none"
-	sessionId := loginCheck(token)
+	sessionId = loginCheck(token, sessionId)
+	fmt.Println(sessionId)
 
 	return sessionId
 }
 
 // getCSRPToken retrieves the CSRP token from the login page button
-func getCSRPToken() lu.String {
+func getCSRPToken() (lu.String, lu.String) {
 	// creates a now colly collector
 	c := colly.NewCollector()
 
@@ -41,11 +42,11 @@ func getCSRPToken() lu.String {
 		log.Fatalln(err)
 	}
 
-	return waitUntilTokenIsSet()
+	return waitUntilTokenIsSet(), findSessionId(c.Cookies(LoginPageURL))
 }
 
 // loginCheck POSTs to the /login_check URL and retrieves the cookies, returning them
-func loginCheck(S lu.String) lu.String {
+func loginCheck(t lu.String, sI lu.String) lu.String {
 	email := os.Getenv("SCRUTINIZER_USRNM")
 	password := os.Getenv("SCRUTINIZER_PSSWD")
 
@@ -57,12 +58,15 @@ func loginCheck(S lu.String) lu.String {
 		Timeout: time.Second * 10,
 	}
 
-	bodyString := fmt.Sprintf("email=%s&password=%s&remember_me=1&_token=%s", strings.Replace(email, "@", "%40", 1), password, S)
-	fmt.Println(bodyString)
+	bodyString := fmt.Sprintf("email=%s&password=%s&remember_me=1&_target_path=&_token=%s", strings.Replace(email, "@", "%40", 1), password, t)
 
 	URL := Endpoint + "login_check"
 	req, err := http.NewRequest("POST", URL, strings.NewReader(bodyString))
+	//req.Header.Set("Accept", "*/*")
+	//req.Header.Set("Accept-Encoding", "gzip, deflate, br")
+	//req.Header.Set("Connection", "keep-alive")
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Set-Cookie", "SESS="+sI.ToS())
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -81,11 +85,7 @@ func loginCheck(S lu.String) lu.String {
 		return ""
 	}
 
-	cookies := res.Header.Get("Cookies")
-
-	fmt.Printf("Cookies: %s\n", cookies)
-
-	token := strings.Split(cookies, "SESS=")[1]
+	token := strings.Split(res.Header.Get("set-cookie"), "SESS=")[1]
 	token = strings.Split(token, ";")[0]
 
 	return lu.String(token)
@@ -100,4 +100,16 @@ func waitUntilTokenIsSet() lu.String {
 		time.Sleep(time.Second)
 	}
 	return _token
+}
+
+// findSessionId finds the session id from the cookies array
+func findSessionId(sz []*http.Cookie) lu.String {
+	var s string
+	for _, v := range sz {
+		if strings.HasPrefix(fmt.Sprintf("%v", v), "SESS=") {
+			s = fmt.Sprintf("%v", v)
+			break
+		}
+	}
+	return lu.String(s)
 }
