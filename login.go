@@ -1,7 +1,6 @@
 package sw
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -20,7 +19,6 @@ func Login() []*http.Cookie {
 	token, cookies := getCSRPToken()
 	_token = "none"
 	cookies = loginCheck(token, cookies)
-	fmt.Println(cookies)
 
 	return cookies
 }

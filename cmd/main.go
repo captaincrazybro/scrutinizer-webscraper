@@ -19,9 +19,10 @@ func main() {
 	cookies := sw.Login()
 	Sz := getRepos(cookies)
 	fmt.Println(Sz)
+	repos = lu.Array{}
 }
 
-func getRepos(cookies []*http.Cookie) []lu.String {
+func getRepos(cookies []*http.Cookie) lu.Array {
 	// creates a new collector
 	c := colly.NewCollector()
 
@@ -57,9 +58,9 @@ func getRepos(cookies []*http.Cookie) []lu.String {
 		}
 	})
 
-	Sz := []lu.String{}
+	Sz := lu.Array{}
 	for _, v := range A {
-		Sz = append(Sz, (v).(lu.String))
+		Sz = append(Sz, v)
 	}
 
 	return Sz
