@@ -18,12 +18,12 @@ var repos = lu.Array{}
 func main() {
 	fmt.Println("Scrutinizer Webscraper started!")
 	// TODO add support for lambda
-	sessionStuff := sw.Login()
-	Sz := getRepos(sessionStuff)
+	cookies := sw.Login()
+	Sz := getRepos(cookies)
 	fmt.Println(Sz)
 }
 
-func getRepos(sessionId lu.String) []lu.String {
+func getRepos(cookies []*http.Cookie) []lu.String {
 	// creates a new collector
 	c := colly.NewCollector()
 	/*c.SetCookies(sw.ReposPageURL, []*http.Cookie{{
@@ -38,11 +38,11 @@ func getRepos(sessionId lu.String) []lu.String {
 	//hdr.Set("Accept-Encoding", "gzip, deflate, br")
 	hdr.Set("Connection", "keep-alive")
 	hdr.Set("User-Agent", c.UserAgent)
-	hdr.Set("Cookie", sessionId.ToS())
+	//hdr.Set("Cookie", sessionId.ToS())
+	c.SetCookies(sw.ReposPageURL, cookies)
 
 	// handle html
 	c.OnHTML("a[title]", func(e *colly.HTMLElement) {
-		fmt.Println("hi")
 		if strings.HasPrefix(e.Attr("title"), sw.BBOrgName+"/") || strings.HasPrefix(e.Attr("title"), sw.GHOrgName+"/") {
 			repos = append(repos, lu.String(e.Attr("title")).Split("/")[1])
 		}
@@ -52,10 +52,6 @@ func getRepos(sessionId lu.String) []lu.String {
 		if e.Attr("class") == "color-green pull-left" {
 			fmt.Println("uh oh")
 		}
-	})
-
-	c.OnResponse(func(r *colly.Response) {
-		//log.Println("Reponse Received", string(r.Body))
 	})
 
 	// starts scraping
