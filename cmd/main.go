@@ -16,8 +16,6 @@ import (
 var repos = lu.Array{}
 
 func main() {
-	fmt.Println("Scrutinizer Webscraper started!")
-	// TODO add support for lambda
 	cookies := sw.Login()
 	Sz := getRepos(cookies)
 	fmt.Println(Sz)
@@ -26,20 +24,6 @@ func main() {
 func getRepos(cookies []*http.Cookie) []lu.String {
 	// creates a new collector
 	c := colly.NewCollector()
-	/*c.SetCookies(sw.ReposPageURL, []*http.Cookie{{
-		Name:    "SESS",
-		Value:   sessionId.ToS(),
-		Expires: time.Time{},
-		Path:    "/",
-	}})*/
-
-	hdr := http.Header{}
-	hdr.Set("Accept", "*/*")
-	//hdr.Set("Accept-Encoding", "gzip, deflate, br")
-	hdr.Set("Connection", "keep-alive")
-	hdr.Set("User-Agent", c.UserAgent)
-	//hdr.Set("Cookie", sessionId.ToS())
-	c.SetCookies(sw.ReposPageURL, cookies)
 
 	// handle html
 	c.OnHTML("a[title]", func(e *colly.HTMLElement) {
@@ -48,11 +32,12 @@ func getRepos(cookies []*http.Cookie) []lu.String {
 		}
 	})
 
-	c.OnHTML("h1[class]", func(e *colly.HTMLElement) {
-		if e.Attr("class") == "color-green pull-left" {
-			fmt.Println("uh oh")
-		}
-	})
+	// prepare request
+	hdr := http.Header{}
+	hdr.Set("Accept", "*/*")
+	hdr.Set("Connection", "keep-alive")
+	hdr.Set("User-Agent", c.UserAgent)
+	c.SetCookies(sw.ReposPageURL, cookies)
 
 	// starts scraping
 	err := c.Request("GET", sw.ReposPageURL, nil, nil, hdr)
