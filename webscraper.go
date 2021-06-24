@@ -6,6 +6,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -96,16 +97,20 @@ func getCSRPToken() (lu.String, []*http.Cookie) {
 
 // loginCheck posts to /login_check to retrieve session id and other cookies
 func loginCheck(t lu.String, cookies []*http.Cookie) []*http.Cookie {
-	envVars := []string{ScrutinizerUsrnm, ScrutinizerPsswd}
-	GetEnvVariables(envVars)
+	email := os.Getenv("SCRUTINIZER_USRNM")
+	password := os.Getenv("SCRUTINIZER_PSSWD")
+
+	if email == "" || password == "" {
+		log.Fatalln("We forgot to initialize the email and/or password!")
+	}
 
 	// creates a new collector
 	c := colly.NewCollector()
 
 	// prepares request
 	urlValues := url.Values{}
-	urlValues.Set("email", envVars[0])
-	urlValues.Set("password", envVars[1])
+	urlValues.Set("email", email)
+	urlValues.Set("password", password)
 	urlValues.Set("remember_me", "1")
 	urlValues.Set("_token", t.ToS())
 	bodyString := urlValues.Encode()
