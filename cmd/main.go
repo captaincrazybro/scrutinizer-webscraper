@@ -4,76 +4,53 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
+	"sort"
+	"strconv"
 
 	sw "github.com/captaincrazybro/scrutinizer-webscraper"
 
 	"github.com/gocolly/colly"
-
-	lu "github.com/captaincrazybro/literalutil"
 )
 
-var repos = lu.Array{}
-
 func main() {
+	var (
+		repos, str []string
+		sum, count float64
+	)
+
+	//Get cookies needed to log in and start a new collector
 	cookies := sw.Login()
-	Sz := getRepos(cookies)
-	fmt.Println(Sz)
-	repos = lu.Array{}
-}
+	collector := colly.NewCollector()
 
-func getRepos(cookies []*http.Cookie) lu.Array {
-	// creates a new collector
-	c := colly.NewCollector()
-
-	// handle html
-	c.OnHTML("a[title]", func(e *colly.HTMLElement) {
-		if strings.HasPrefix(e.Attr("title"), sw.BBOrgName+"/") || strings.HasPrefix(e.Attr("title"), sw.GHOrgName+"/") {
-			repos = append(repos, lu.String(e.Attr("title")).Split("/")[1])
+	//Get list of repositories and their quality scores
+	collector.OnHTML("a[title]", func(e *colly.HTMLElement) {
+		if strings.HasPrefix(e.Attr("title"), sw.BBOrgName+"/") || 
+		strings.HasPrefix(e.Attr("title"), sw.GHOrgName+"/") {
+			str = strings.Fields(e.Text)
+			repos = append(repos, str...)
+		}
+	})
+	collector.OnHTML("div[class]", func(e *colly.HTMLElement) {
+		if strings.HasPrefix(e.Attr("class"), "span2") {
+			str = strings.Fields(e.Text)
+			if num, err := strconv.ParseFloat(str[0], 64); err == nil {
+				sum += num
+				count++
+			}
 		}
 	})
 
-	// prepare request
+	//Prepare request and scrape website
 	hdr := http.Header{}
 	hdr.Set("Accept", "*/*")
 	hdr.Set("Connection", "keep-alive")
-	hdr.Set("User-Agent", c.UserAgent)
-	c.SetCookies(sw.ReposPageURL, cookies)
-
-	// starts scraping
-	err := c.Request("GET", sw.ReposPageURL, nil, nil, hdr)
+	hdr.Set("User-Agent", collector.UserAgent)
+	collector.SetCookies(sw.ReposPageURL, cookies)
+	err := collector.Request("GET", sw.ReposPageURL, nil, nil, hdr)
 	if err != nil {
-		return nil
+		fmt.Errorf("%s\n", err)
 	}
 
-	// waits util done adding to repos variable
-	A := waitUtilReposIsSet()
-	A.Sort(func(a, b interface{}) int {
-		if (a).(lu.String) > (b).(lu.String) {
-			return 1
-		} else if (b).(lu.String) > (a).(lu.String) {
-			return -1
-		} else {
-			return 0
-		}
-	})
-
-	Sz := lu.Array{}
-	for _, v := range A {
-		Sz = append(Sz, v)
-	}
-
-	return Sz
-}
-
-// waitUtilReposIsSet waits until the repos variable is set
-func waitUtilReposIsSet() lu.Array {
-	for i := 0; repos.Len() == 0; i++ {
-		if i > 10 {
-			return lu.Array{}
-		}
-		time.Sleep(time.Second)
-	}
-	time.Sleep(time.Second * 5)
-	return repos
+	sort.Strings(repos)
+	fmt.Printf("%s\n%f\n", repos, sum / count)
 }
