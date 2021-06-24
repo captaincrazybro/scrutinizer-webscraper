@@ -1,9 +1,15 @@
 package main
 
 import (
-	//"fmt"
+	"bufio"
+	"fmt"
+	"gitops"
 	"log"
-	//"strings"
+	"os"
+	"strings"
+	_ "strings"
+
+	lu "github.com/captaincrazybro/literalutil"
 
 	sw "github.com/captaincrazybro/scrutinizer-webscraper"
 	//"github.com/silinternational/gitops"
@@ -23,10 +29,10 @@ func main() {
 	//handleSchedule()
 
 
-	sw.SendEmail()
+	//sw.SendEmail()
 }
 
-/*
+
 // handleSchedule function to call once every week
 func handleSchedule() {
 	repos, avg := sw.FetchScrutinizerRepos()
@@ -34,6 +40,7 @@ func handleSchedule() {
 	// weekly audit depicting which github and bitbucket repositories are not registered to scrutinizer
 	sz := compareRepos(repos)
 	fmt.Print(sz)
+	// TODO: send email
 
 	// weekly average score report
 	sw.SendEmail(repos, avg) //Doesn't work right now, this is just a template
@@ -55,6 +62,7 @@ func compareRepos(rs []string) []gitops.Repository {
 	ghProv := gitops.GetProvider(sw.GitHub)
 	bbProv := gitops.GetProvider(sw.BitBucket)
 
+	// converts scrutinizer repo strings to ScrutRepo struct
 	rz := []sw.ScrutRepo{}
 	for _, v := range rs {
 		repo, err := sw.ScrutRepo{}.FromString(v)
@@ -64,6 +72,7 @@ func compareRepos(rs []string) []gitops.Repository {
 		rz = append(rz, repo)
 	}
 
+	// gets repos from github and puts them into an array
 	ghListedRepos, err := ghProv.ListRepos(1)
 	if err != nil {
 		log.Fatalln(err)
@@ -78,6 +87,7 @@ func compareRepos(rs []string) []gitops.Repository {
 		ghRepos = append(ghRepos, ghListedRepos...)
 	}
 
+	// gets repos from bitbucket and puts them into an array
 	bbListedRepos, err := bbProv.ListRepos(1)
 	if err != nil {
 		log.Fatalln(err)
@@ -92,16 +102,17 @@ func compareRepos(rs []string) []gitops.Repository {
 		bbRepos = append(bbRepos, bbListedRepos...)
 	}
 
+	// does the comparing
 	repos := []gitops.Repository{}
 
 	for _, v := range ghRepos {
-		if arrIncludesRepo(rz, v, ghProv) {
+		if arrIncludesRepo(rz, v, ghProv) && !isIgnored(v, ghProv) {
 			repos = append(repos, v)
 		}
 	}
 
 	for _, v := range bbRepos {
-		if arrIncludesRepo(rz, v, bbProv) {
+		if arrIncludesRepo(rz, v, bbProv) && !isIgnored(v, bbProv) {
 			repos = append(repos, v)
 		}
 	}
@@ -117,4 +128,28 @@ func arrIncludesRepo(a []sw.ScrutRepo, r gitops.Repository, p gitops.Provider) b
 	}
 	return false
 }
-*/
+
+func isIgnored(r gitops.Repository, p gitops.Provider) bool {
+	filePtr, err := os.Open(sw.IgnoredReposFileName)
+	if err != nil {
+		log.Fatalf("%s file doesn't exist\n", sw.IgnoredReposFileName)
+	}
+
+	rdr := bufio.NewReader(filePtr)
+	line, _, fileError := rdr.ReadLine()
+	prov := lu.STernary(p.GetName() == sw.GitHub, "g", "b")
+	fmtR := fmt.Sprintf("/%s/%s/%s", prov, p.GetOwner(), r.GetName())
+
+	for fileError == nil {
+		s := string(line)
+
+		if s == fmtR {
+			return true
+		}
+
+		line, _, fileError = rdr.ReadLine()
+	}
+
+	return false
+}
+>>>>>>> Stashed changes
