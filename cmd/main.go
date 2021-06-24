@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"gitops"
+	//"fmt"
 	"log"
-	"strings"
+	//"strings"
 
 	sw "github.com/captaincrazybro/scrutinizer-webscraper"
+	//"github.com/silinternational/gitops"
 )
 
 func init() {
@@ -20,9 +20,13 @@ func main() {
 	//lambda.Start(handleSchedule)
 
 	// testing purposes
-	handleSchedule()
+	//handleSchedule()
+
+
+	sw.SendEmail()
 }
 
+/*
 // handleSchedule function to call once every week
 func handleSchedule() {
 	repos, avg := sw.FetchScrutinizerRepos()
@@ -113,3 +117,4 @@ func arrIncludesRepo(a []sw.ScrutRepo, r gitops.Repository, p gitops.Provider) b
 	}
 	return false
 }
+*/
