@@ -7,8 +7,8 @@ import (
 )
 
 // SendEmail sends an email of the repositories and their average quality score
-func SendEmail(repo []string, avg float64) {
-	envVars := []string{EmailUsername, EmailPassword}
+func SendEmail(/*repo []string, avg float64*/) {
+	envVars := []string{ScrutinizerUsrnm, ScrutinizerPsswd}
 	GetEnvVariables(envVars)
 
 	//Copied from the first gomail example
@@ -23,6 +23,6 @@ func SendEmail(repo []string, avg float64) {
 
 	// Send the email to EmailUsername.
 	if err := d.DialAndSend(m); err != nil {
-		log.Fatalf("Could not send email:\n\n%s", err)
+		log.Fatalf("could not send email:\n%s", err)
 	}
 }
