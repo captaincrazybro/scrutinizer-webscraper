@@ -13,5 +13,7 @@ background-color: #CCC; background-repeat: repeat-x; border:rgba(0, 0, 0, 0.1) r
 padding:11px 15px; `
 	APISecretEnv     string = "SW_GA_API_SECRET"
 	MeasurementIDEnv string = "SW_GA_MEASUREMENT_ID"
+	EmailUsername	 string = "EMAIL_USERNAME"
+	EmailPassword	 string = "EMAIL_PASSWORD"
 	ClientID         string = "silinternational/ga-event-tracker"
 )
