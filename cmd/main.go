@@ -36,8 +36,6 @@ func main() {
 			if num, err := strconv.ParseFloat(str[0], 64); err == nil {
 				sum += num
 				count++
-			} else {
-				fmt.Errorf("%s\n", err)
 			}
 		}
 	})
