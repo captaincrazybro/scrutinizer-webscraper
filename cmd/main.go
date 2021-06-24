@@ -28,10 +28,8 @@ func main() {
 	// testing purposes
 	//handleSchedule()
 
-
 	//sw.SendEmail()
 }
-
 
 // handleSchedule function to call once every week
 func handleSchedule() {
@@ -152,4 +150,3 @@ func isIgnored(r gitops.Repository, p gitops.Provider) bool {
 
 	return false
 }
->>>>>>> Stashed changes
