@@ -24,7 +24,7 @@ func FetchScrutinizerRepos() ([]string, float64) {
 	)
 
 	//Get cookies needed to log in and start a new collector
-	cookies := Login()
+	cookies := login()
 	collector := colly.NewCollector()
 
 	//Get list of repositories and their quality scores
@@ -62,8 +62,8 @@ func FetchScrutinizerRepos() ([]string, float64) {
 
 var _token lu.String = "none"
 
-// Login logs into scrutinizer, retrieves the session cookies and returns them
-func Login() []*http.Cookie {
+// login logs into scrutinizer, retrieves the session cookies and returns them
+func login() []*http.Cookie {
 	token, cookies := getCSRPToken()
 	_token = "none"
 	cookies = loginCheck(token, cookies)
