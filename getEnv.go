@@ -14,7 +14,7 @@ func GetEnvVariables(env []string) {
 		value = os.Getenv(env[i])
 
 		if value == "" {
-			log.Fatalln("error: please set environment variable " + env[i])
+			log.Fatalln("please set environment variable " + env[i])
 		} else {
 			env[i] = value
 		}

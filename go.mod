@@ -18,7 +18,7 @@ require (
 	github.com/silinternational/ga-event-tracker v0.0.0-20210611195422-53856039f14a
 	github.com/stretchr/testify v1.6.1 // indirect
 	github.com/temoto/robotstxt v1.1.2 // indirect
-	github.com/silinternational/gitops v0.0.0
+	github.com/silinternational/gitops v0.0.0b0
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	gopkg.in/alexcesaro/quotedprintable.v3 v3.0.0-20150716171945-2caba252f4dc // indirect
