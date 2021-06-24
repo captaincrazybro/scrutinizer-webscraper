@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/silinternational/gitops"
 
@@ -94,11 +95,12 @@ func isIgnored(r gitops.Repository, p gitops.Provider) bool {
 
 	rdr := bufio.NewReader(filePtr)
 	line, _, fileError := rdr.ReadLine()
-	prov := lu.STernary(p.GetName() == sw.GitHub, "g", "b")
-	fmtR := fmt.Sprintf("/%s/%s/%s", prov, p.GetOwner(), r.GetName())
+	provName := lu.STernary(p.GetName() == sw.GitHub, "g", "b")
+	fmtR := fmt.Sprintf("%s/%s/%s", provName, p.GetOwner(), r.GetName())
 
 	for fileError == nil {
 		s := string(line)
+		s = strings.TrimPrefix(s, "/")
 
 		if s == fmtR {
 			return true
