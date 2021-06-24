@@ -1,5 +1,12 @@
 package main
 
+import "log"
+
+func init() {
+	log.SetFlags(0)
+	log.SetPrefix("Error: ")
+}
+
 func main() {
 	// starts the lambda
 	//fmt.Println("Lambda started!")

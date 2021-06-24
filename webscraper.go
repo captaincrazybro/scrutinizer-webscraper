@@ -3,6 +3,7 @@ package sw
 import (
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"net/url"
 	"os"
@@ -31,7 +32,7 @@ func FetchScrutinizerRepos() ([]string, float64) {
 	collector.OnHTML("a[title]", func(e *colly.HTMLElement) {
 		if strings.HasPrefix(e.Attr("title"), BBOrgName+"/") ||
 			strings.HasPrefix(e.Attr("title"), GHOrgName+"/") {
-			str = strings.Fields(e.Text)
+			str = strings.Fields(parseStructRepoString(e.Attr("href")))
 			repos = append(repos, str...)
 		}
 	})
@@ -56,8 +57,10 @@ func FetchScrutinizerRepos() ([]string, float64) {
 		fmt.Errorf("%s\n", err)
 	}
 
+	avg := sum / count
+
 	sort.Strings(repos)
-	return repos, sum / count
+	return repos, math.Round(avg*100) / 100
 }
 
 var _token lu.String = "none"
@@ -139,4 +142,10 @@ func waitUntilTokenIsSet() lu.String {
 		time.Sleep(time.Second)
 	}
 	return _token
+}
+
+// parseStructRepoString removes the "/"s from either side of the string
+func parseStructRepoString(s string) string {
+	s = strings.TrimPrefix(s, "/")
+	return strings.TrimSuffix(s, "/")
 }
