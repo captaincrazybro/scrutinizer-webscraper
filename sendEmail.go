@@ -4,7 +4,8 @@ import (
 	"github.com/go-gomail/gomail"
 )
 
-func SendEmail(/*repo []string, avg float64*/) {
+// SendEmail sends an email of the repositories and their average quality score
+func SendEmail(repo []string, avg float64) {
 	//Copied from the first gomail example
 	m := gomail.NewMessage()
 	m.SetHeader("From", "cameron_gordon@sil.org")
