@@ -27,8 +27,6 @@ func main() {
 
 	// testing purposes
 	//handleSchedule()
-
-	//sw.SendEmail()
 }
 
 // handleSchedule function to call once every week
