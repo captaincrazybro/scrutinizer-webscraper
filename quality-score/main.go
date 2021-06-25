@@ -1,6 +1,10 @@
 package main
 
-import "log"
+import (
+	"log"
+
+	sw "github.com/captaincrazybro/scrutinizer-webscraper"
+)
 
 func init() {
 	log.SetFlags(0)
@@ -18,7 +22,7 @@ func main() {
 
 // handleSchedule function to call once every week
 func handleSchedule() {
-	_, avg:= sw.FetchScrutinizerRepos()
+	_, avg := sw.FetchScrutinizerRepos()
 
 	err := sw.SendDataToGA(avg)
 	if err != nil {
@@ -26,5 +30,5 @@ func handleSchedule() {
 	}
 
 	// TODO: send email
-	
+
 }

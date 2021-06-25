@@ -1,11 +1,54 @@
 package sw
 
 import (
-	"log"
+	"os"
 
-	"github.com/go-gomail/gomail"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ses"
+	lu "github.com/captaincrazybro/literalutil"
+	c "github.com/captaincrazybro/literalutil/console"
 )
 
+const (
+	region lu.String = "us-west-2"
+)
+
+// SendReposAuditEmail sends an email that includes all the repositories that have not been
+// registered on Scrutinizer
+func SendReposAuditEmail(repos lu.SArray) {
+	// creates session of ses
+	config := &aws.Config{
+		Region:      aws.String(region.Tos()),
+		Credentials: credentials.NewEnvCredentials(),
+	}
+
+	sess := session.Must(session.NewSession(config))
+	svc := ses.New(sess)
+	from := os.Getenv(EmailUsrnm)
+	template := "ReposAuditTemplate"
+	if from == "" {
+		c.Flnf("environment variable %s has not been set", EmailUsrnm)
+	}
+
+	input := &ses.SendTemplatedEmailInput{
+		Source:   &from,
+		Template: &template,
+		Destination: &ses.Destination{
+			// TODO: change this to env variable
+			ToAddresses: []*string{&from},
+		},
+		//TemplateData: &data
+	}
+
+	_, err := svc.SendTemplatedEmail(input)
+	if err != nil {
+		return
+	}
+}
+
+/*
 // SendEmail sends an email of the repositories and their average quality score
 func SendRepoMail() {
 	envVars := []string{ScrutinizerUsrnm, ScrutinizerPsswd}
@@ -24,6 +67,8 @@ func SendRepoMail() {
 	if err := d.DialAndSend(m); err != nil {
 		log.Fatalf("could not send email:\n%s", err)
 	}
-}
+}*/
 
-func SendScoreMail
+func SendScoreMail() {
+
+}

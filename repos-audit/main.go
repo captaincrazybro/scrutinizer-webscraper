@@ -1,9 +1,9 @@
 package main
 
 import (
-	//"fmt"
-	"log"
 	_ "strings"
+
+	c "github.com/captaincrazybro/literalutil/console"
 
 	"github.com/silinternational/gitops"
 
@@ -12,9 +12,7 @@ import (
 
 func init() {
 	gitops.Init()
-	log.SetFlags(0)
-	log.SetPrefix("Error: ")
-
+	c.SetErrorPrefix("Error: ")
 }
 
 func main() {
@@ -28,12 +26,12 @@ func main() {
 
 // handleSchedule function to call once every week
 func handleSchedule() {
-	//repos, _ := sw.FetchScrutinizerRepos()
+	repos, _ := sw.FetchScrutinizerRepos()
 
 	// weekly audit depicting which github and bitbucket repositories are not registered to scrutinizer
-	//sz := compareRepos(repos)
+	sz := compareRepos(repos)
 	//fmt.Print(sz)
 	// TODO: send email
-	sw.SendEmail()
+	sw.SendReposAuditEmail(sz)
 
 }

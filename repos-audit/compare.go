@@ -15,7 +15,7 @@ import (
 
 // compareRepos compares the repositories from github and bitbucket to the scrutinizer repos
 // telling which ones are registered on scrutinizer
-func compareRepos(rs []string) []gitops.Repository {
+func compareRepos(rs []string) lu.SArray {
 	ghProv := gitops.GetProvider(sw.GitHub)
 	bbProv := gitops.GetProvider(sw.BitBucket)
 
@@ -60,17 +60,17 @@ func compareRepos(rs []string) []gitops.Repository {
 	}
 
 	// does the comparing
-	repos := []gitops.Repository{}
+	repos := lu.SArray{}
 
 	for _, v := range ghRepos {
 		if !arrIncludesRepo(rz, v, ghProv) && !isIgnored(v, ghProv) {
-			repos = append(repos, v)
+			repos = append(repos, lu.String("/g/%s/%s").F(ghProv.GetOwner(), v.GetName()))
 		}
 	}
 
 	for _, v := range bbRepos {
 		if !arrIncludesRepo(rz, v, bbProv) && !isIgnored(v, bbProv) {
-			repos = append(repos, v)
+			repos = append(repos, lu.String("/b/%s/%s").F(bbProv.GetOwner(), v.GetName()))
 		}
 	}
 

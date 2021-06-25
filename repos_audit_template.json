@@ -1,0 +1,7 @@
+{
+  "Template": {
+    "TemplateName": "ReposAuditTemplate",
+    "SubjectPart": "Scrutinizer Repositories Audit",
+    "TextPart": "Hello!\n The following repositories have not been registered on Scrutinizer:\n{{unregistered_repos}}"
+  }
+}
