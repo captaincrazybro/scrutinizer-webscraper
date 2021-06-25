@@ -30,5 +30,6 @@ func handleSchedule() {
 	}
 
 	// TODO: send email
-
+	data := `{"average":"` + avg + `"}`
+	sw.SendEmail("ReposScoreTemplate", data.Tos())
 }

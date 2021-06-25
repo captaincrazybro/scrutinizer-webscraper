@@ -71,15 +71,3 @@ func SendRepoMail() {
 		log.Fatalf("could not send email:\n%s", err)
 	}
 }*/
-
-func SendScoreMail() {
-
-}
-
-func toPtrString(a []string) []*string {
-	var pa []*string
-	for _, v := range a {
-		pa = append(pa, &v)
-	}
-	return pa
-}

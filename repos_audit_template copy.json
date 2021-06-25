@@ -1,0 +1,7 @@
+{
+  "Template": {
+    "TemplateName": "ReposScoreTemplate",
+    "SubjectPart": "Scrutinizer Repositories Quality Score",
+    "TextPart": "Hello!\n The average quality score for your Scrutinizer repositories is:\n{{average}}"
+  }
+}
