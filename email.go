@@ -7,7 +7,7 @@ import (
 )
 
 // SendEmail sends an email of the repositories and their average quality score
-func SendEmail(/*repo []string, avg float64*/) {
+func SendRepoMail() {
 	envVars := []string{ScrutinizerUsrnm, ScrutinizerPsswd}
 	GetEnvVariables(envVars)
 
@@ -25,3 +25,5 @@ func SendEmail(/*repo []string, avg float64*/) {
 		log.Fatalf("could not send email:\n%s", err)
 	}
 }
+
+func SendScoreMail
