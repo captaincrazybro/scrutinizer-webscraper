@@ -18,5 +18,13 @@ func main() {
 
 // handleSchedule function to call once every week
 func handleSchedule() {
+	_, avg:= sw.FetchScrutinizerRepos()
 
+	err := sw.SendDataToGA(avg)
+	if err != nil {
+		log.Println(err)
+	}
+
+	// TODO: send email
+	
 }

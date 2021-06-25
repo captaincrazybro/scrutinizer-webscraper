@@ -17,7 +17,6 @@ func SendEmail(/*repo []string, avg float64*/) {
 	m.SetHeader("To", "camerongordon111@gmail.com")
 	m.SetHeader("Subject", "S")
 	m.SetBody("text/html", "Hello <b>Bob</b> and <i>Cora</i>!")
-	m.Attach("/home/Alex/lolcat.jpg")
 
 	d := gomail.NewDialer("smtp.gmail.com", 587, envVars[0], envVars[1])
 

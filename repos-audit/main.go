@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	//"fmt"
 	"log"
 	_ "strings"
 
@@ -28,11 +28,12 @@ func main() {
 
 // handleSchedule function to call once every week
 func handleSchedule() {
-	repos, _ := sw.FetchScrutinizerRepos()
+	//repos, _ := sw.FetchScrutinizerRepos()
 
 	// weekly audit depicting which github and bitbucket repositories are not registered to scrutinizer
-	sz := compareRepos(repos)
-	fmt.Print(sz)
+	//sz := compareRepos(repos)
+	//fmt.Print(sz)
 	// TODO: send email
+	sw.SendEmail()
 
 }
