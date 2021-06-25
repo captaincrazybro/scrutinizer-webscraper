@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"strconv"
 
 	sw "github.com/captaincrazybro/scrutinizer-webscraper"
 )
@@ -23,6 +24,7 @@ func main() {
 // handleSchedule function to call once every week
 func handleSchedule() {
 	_, avg := sw.FetchScrutinizerRepos()
+	
 
 	err := sw.SendDataToGA(avg)
 	if err != nil {
@@ -30,6 +32,6 @@ func handleSchedule() {
 	}
 
 	// TODO: send email
-	data := `{"average":"` + avg + `"}`
-	sw.SendEmail("ReposScoreTemplate", data.Tos())
+	data := `{"average":"` + strconv.FormatFloat(avg, 'E', -1, 64) + `"}`
+	sw.SendEmail("ReposScoreTemplate", data)
 }

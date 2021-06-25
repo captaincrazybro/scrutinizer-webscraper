@@ -51,23 +51,10 @@ func SendEmail(template string, data string) {
 	}
 }
 
-/*
-// SendEmail sends an email of the repositories and their average quality score
-func SendRepoMail() {
-	envVars := []string{ScrutinizerUsrnm, ScrutinizerPsswd}
-	GetEnvVariables(envVars)
-
-	//Copied from the first gomail example
-	m := gomail.NewMessage()
-	m.SetHeader("From", envVars[0])
-	m.SetHeader("To", "camerongordon111@gmail.com")
-	m.SetHeader("Subject", "S")
-	m.SetBody("text/html", "Hello <b>Bob</b> and <i>Cora</i>!")
-
-	d := gomail.NewDialer("smtp.gmail.com", 587, envVars[0], envVars[1])
-
-	// Send the email to EmailUsername.
-	if err := d.DialAndSend(m); err != nil {
-		log.Fatalf("could not send email:\n%s", err)
+func toPtrString(a []string) []*string {
+	var pa []*string
+	for _, v := range a {
+		pa = append(pa, &v)
 	}
-}*/
+	return pa
+}
