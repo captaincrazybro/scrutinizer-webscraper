@@ -112,7 +112,7 @@ func loginCheck(t lu.String, cookies []*http.Cookie) []*http.Cookie {
 	urlValues.Set("email", email)
 	urlValues.Set("password", password)
 	urlValues.Set("remember_me", "1")
-	urlValues.Set("_token", t.ToS())
+	urlValues.Set("_token", t.Tos())
 	bodyString := urlValues.Encode()
 
 	URL := Endpoint + "login_check"

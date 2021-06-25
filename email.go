@@ -2,6 +2,7 @@ package sw
 
 import (
 	"os"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -15,9 +16,8 @@ const (
 	region lu.String = "us-west-2"
 )
 
-// SendReposAuditEmail sends an email that includes all the repositories that have not been
-// registered on Scrutinizer
-func SendReposAuditEmail(repos lu.SArray) {
+// SendEmail sends an email with a certain template and data
+func SendEmail(template string, data string) {
 	// creates session of ses
 	config := &aws.Config{
 		Region:      aws.String(region.Tos()),
@@ -27,19 +27,22 @@ func SendReposAuditEmail(repos lu.SArray) {
 	sess := session.Must(session.NewSession(config))
 	svc := ses.New(sess)
 	from := os.Getenv(EmailUsrnm)
-	template := "ReposAuditTemplate"
-	if from == "" {
-		c.Flnf("environment variable %s has not been set", EmailUsrnm)
+	to := os.Getenv(ToEmails)
+	if from == "" || to == "" {
+		c.Flnf("environment variable %s has not been set", lu.STernary(from == "", EmailUsrnm, ToEmails))
 	}
+	to = strings.Trim(to, " ")
+	emails := strings.Split(to, ",")
+	toEmails := toPtrString(emails)
 
 	input := &ses.SendTemplatedEmailInput{
 		Source:   &from,
 		Template: &template,
 		Destination: &ses.Destination{
 			// TODO: change this to env variable
-			ToAddresses: []*string{&from},
+			ToAddresses: toEmails,
 		},
-		//TemplateData: &data
+		TemplateData: &data,
 	}
 
 	_, err := svc.SendTemplatedEmail(input)
@@ -71,4 +74,12 @@ func SendRepoMail() {
 
 func SendScoreMail() {
 
+}
+
+func toPtrString(a []string) []*string {
+	var pa []*string
+	for _, v := range a {
+		pa = append(pa, &v)
+	}
+	return pa
 }

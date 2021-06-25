@@ -31,7 +31,9 @@ func handleSchedule() {
 	// weekly audit depicting which github and bitbucket repositories are not registered to scrutinizer
 	sz := compareRepos(repos)
 	//fmt.Print(sz)
-	// TODO: send email
-	sw.SendReposAuditEmail(sz)
+	uRepos := sz.Join("\n")
+
+	data := `{"unregistered_repos":"` + uRepos + `"}`
+	sw.SendEmail("ReposAuditTemplate", data.Tos())
 
 }
