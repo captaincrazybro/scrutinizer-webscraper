@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
 	_ "strings"
+
+	"github.com/aws/aws-lambda-go/lambda"
 
 	c "github.com/captaincrazybro/literalutil/console"
 
@@ -17,11 +20,11 @@ func init() {
 
 func main() {
 	// starts the lambda
-	//fmt.Println("Lambda started!")
-	//lambda.Start(handleSchedule)
+	fmt.Println("Lambda started!")
+	lambda.Start(handleSchedule)
 
 	// testing purposes
-	handleSchedule()
+	//handleSchedule()
 }
 
 // handleSchedule function to call once every week
