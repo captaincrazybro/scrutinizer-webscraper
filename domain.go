@@ -17,4 +17,6 @@ const (
 	BitBucket            string = "bitbucket"
 	IgnoredReposFileName string = "ignored-repos"
 	ToEmails             string = "SW_TO_EMAILS"
+	S3ObjectKeyEnv       string = "SW_OBJECT_KEY"
+	S3BucketEnv          string = "SW_BUCKET"
 )
