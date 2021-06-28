@@ -2,7 +2,6 @@ package sw
 
 import (
 	"os"
-	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -13,7 +12,7 @@ import (
 )
 
 const (
-	region lu.String = "us-west-2"
+	region lu.String = "us"
 )
 
 // SendEmail sends an email with a certain template and data
@@ -27,19 +26,17 @@ func SendEmail(template string, data string) {
 	sess := session.Must(session.NewSession(config))
 	svc := ses.New(sess)
 	from := os.Getenv(EmailUsrnm)
-	to := os.Getenv(ToEmails)
+	to := lu.String(os.Getenv(ToEmails))
 	if from == "" || to == "" {
 		c.Flnf("environment variable %s has not been set", lu.STernary(from == "", EmailUsrnm, ToEmails))
 	}
-	to = strings.Trim(to, " ")
-	emails := strings.Split(to, ",")
-	toEmails := toPtrString(emails)
+	emails := to.Trim(" ").Split(",")
+	toEmails := toPtrString(emails.Tosa())
 
 	input := &ses.SendTemplatedEmailInput{
 		Source:   &from,
 		Template: &template,
 		Destination: &ses.Destination{
-			// TODO: change this to env variable
 			ToAddresses: toEmails,
 		},
 		TemplateData: &data,

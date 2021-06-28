@@ -1,8 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"strconv"
+
+	"github.com/aws/aws-lambda-go/lambda"
 
 	sw "github.com/captaincrazybro/scrutinizer-webscraper"
 )
@@ -14,17 +17,16 @@ func init() {
 
 func main() {
 	// starts the lambda
-	//fmt.Println("Lambda started!")
-	//lambda.Start(handleSchedule)
+	fmt.Println("Lambda started!")
+	lambda.Start(handleSchedule)
 
 	// testing purposes
-	handleSchedule()
+	//handleSchedule()
 }
 
 // handleSchedule function to call once every week
 func handleSchedule() {
 	_, avg := sw.FetchScrutinizerRepos()
-	
 
 	err := sw.SendDataToGA(avg)
 	if err != nil {

@@ -6,8 +6,9 @@ require (
 	github.com/PuerkitoBio/goquery v1.7.0 // indirect
 	github.com/antchfx/htmlquery v1.2.3 // indirect
 	github.com/antchfx/xmlquery v1.3.6 // indirect
+	github.com/aws/aws-lambda-go v1.24.0 // indirect
 	github.com/aws/aws-sdk-go v1.38.67
-	github.com/captaincrazybro/literalutil v0.2.3
+	github.com/captaincrazybro/literalutil v0.2.4
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/gocolly/colly v1.2.0
 	github.com/kennygrant/sanitize v1.2.4 // indirect
