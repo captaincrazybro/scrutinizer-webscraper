@@ -33,7 +33,6 @@ func handleSchedule() {
 		log.Println(err)
 	}
 
-	// TODO: send email
 	data := `{"average":"` + strconv.FormatFloat(avg, 'E', -1, 64) + `"}`
 	sw.SendEmail("ReposScoreTemplate", data)
 }
